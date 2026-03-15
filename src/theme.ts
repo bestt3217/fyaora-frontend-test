@@ -11,6 +11,7 @@ declare module '@mui/material/styles' {
     neutral300: string
     neutral400: string
     neutral600: string
+    neutral800: string
     neutral950: string
     primaryGray: string
     blue100: string
@@ -24,6 +25,7 @@ declare module '@mui/material/styles' {
     neutral300?: string
     neutral400?: string
     neutral600?: string
+    neutral800?: string
     blue100?: string
     blue200?: string
     primaryGray?: string
@@ -40,11 +42,15 @@ const palette = {
   neutral300: '#e5e5e5',
   neutral400: '#677582',
   neutral600: '#4F6071',
+  neutral800: '#D3D8DD',
   neutral950: '#f4f7f9',
-  primaryGray: '#324054',
+
   // Blues
   blue100: '#1a78f2',
   blue200: '#145fbf',
+
+  // Primary Gray
+  primaryGray: '#324054',
 
   // MUI primary (maps to blue for buttons, etc.)
   primary: {
