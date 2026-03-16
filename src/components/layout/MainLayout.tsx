@@ -9,7 +9,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
   return (
     <>
       <Header />
-      <Stack component="main" flex={1} sx={{ px: 3 }}>
+      <Stack component="main" flex={1} sx={{ px: { xs: 2, md: 3 } }}>
         {children}
       </Stack>
     </>

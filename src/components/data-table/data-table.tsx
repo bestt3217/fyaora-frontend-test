@@ -91,9 +91,9 @@ export function DataTable<TData>({
                       colSpan={header.colSpan}
                       align="left"
                       sx={(theme) => ({
-                        p: 2,
+                        p: { xs: 1, md: 2 },
                         color: theme.palette.neutral200,
-                        fontSize: 17,
+                        fontSize: { xs: 14, md: 17 },
                         lineHeight: '24px',
                         fontWeight: 700,
                         whiteSpace: 'nowrap',
@@ -135,9 +135,9 @@ export function DataTable<TData>({
                         key={cell.id}
                         align="left"
                         sx={(theme) => ({
-                          p: 2,
+                          p: { xs: 1, md: 2 },
                           color: theme.palette.neutral200,
-                          fontSize: 14,
+                          fontSize: { xs: 12, md: 14 },
                           lineHeight: '20px',
                           letterSpacing: 0.25,
                           borderBottom: 'none',

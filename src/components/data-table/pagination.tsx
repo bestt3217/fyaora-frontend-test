@@ -99,7 +99,15 @@ export function DataTablePagination<TData>({
         p: 1,
       }}
     >
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flex: 1 }}>
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 2,
+          flex: 1,
+          justifyContent: { xs: 'center', md: 'flex-start' },
+        }}
+      >
         {showPageSizeSelector && (
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <Typography variant="body2" component="span" fontWeight={500}>
@@ -173,7 +181,14 @@ export function DataTablePagination<TData>({
         </Box>
       </Box>
 
-      <Typography variant="body2" color="text.secondary">
+      <Typography
+        variant="body2"
+        color="text.secondary"
+        sx={{
+          textAlign: { xs: 'center', md: 'left' },
+          width: { xs: '100%', md: 'auto' },
+        }}
+      >
         {selectedCount} of {totalRows} row(s) selected.
       </Typography>
     </Box>

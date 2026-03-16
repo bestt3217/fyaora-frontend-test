@@ -96,11 +96,11 @@ export default function FilterBar({ initialValues, onApply }: FilterBarProps) {
   return (
     <Box
       sx={{
-        py: MAIN_SPACING_Y * 1,
-        width: FILTER_BAR_WIDTH,
-        minWidth: FILTER_BAR_WIDTH,
+        py: { xs: 0, lg: MAIN_SPACING_Y * 1 },
+        width: { xs: '100%', lg: FILTER_BAR_WIDTH },
+        minWidth: { xs: '100%', lg: FILTER_BAR_WIDTH },
         overflow: 'hidden',
-        height: { xs: '100%', md: `calc(100vh - ${HEADER_HEIGHT_MD}px)` },
+        height: { xs: '100%', lg: `calc(100vh - ${HEADER_HEIGHT_MD}px)` },
         position: 'sticky',
         top: HEADER_HEIGHT_MD,
       }}
@@ -113,7 +113,7 @@ export default function FilterBar({ initialValues, onApply }: FilterBarProps) {
           bgcolor: 'neutral950',
           p: 2,
         }}
-        gap={4}
+        gap={{xs: 2, md: 4}}
       >
         <Box component={RouterLink} to="/">
           <img src={logo} alt="Logo" style={{ height: 32, width: 'auto' }} />
@@ -125,7 +125,7 @@ export default function FilterBar({ initialValues, onApply }: FilterBarProps) {
         </Box>
 
         <Stack
-          gap={4}
+          gap={{xs: 2, md: 4}}
           sx={{
             overflowY: 'auto',
           }}
@@ -223,10 +223,20 @@ export default function FilterBar({ initialValues, onApply }: FilterBarProps) {
         </Stack>
 
         <Stack direction="row" spacing={1} alignItems="center">
-          <Button variant="contained" onClick={handleApply} size="medium">
+          <Button
+            variant="contained"
+            onClick={handleApply}
+            size="medium"
+            fullWidth
+          >
             Apply Filters
           </Button>
-          <Button variant="outlined" onClick={handleClear} size="medium">
+          <Button
+            variant="outlined"
+            onClick={handleClear}
+            size="medium"
+            fullWidth
+          >
             Clear Filters
           </Button>
         </Stack>

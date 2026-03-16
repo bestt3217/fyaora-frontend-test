@@ -5,7 +5,8 @@ import {
   useQueryState,
   useQueryStates,
 } from 'nuqs'
-import { Stack, Typography } from '@mui/material'
+import { Button, Drawer, Stack, Typography, useMediaQuery } from '@mui/material'
+import { useTheme } from '@mui/material/styles'
 import FilterBar from '@/components/waitlist/FilterBar'
 import type { FilterValues } from '@/components/waitlist/FilterBar'
 import {
@@ -41,6 +42,9 @@ export function WaitListTableWrapper() {
   const [fullData, setFullData] = useState<WaitlistRow[]>([])
   const [loading, setLoading] = useState(true)
   const [, setError] = useState<string | null>(null)
+  const theme = useTheme()
+  const isLgUp = useMediaQuery(theme.breakpoints.up('lg'))
+  const [filtersOpen, setFiltersOpen] = useState(false)
 
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
   const [perPage] = useQueryState('perPage', parseAsInteger.withDefault(10))
@@ -84,6 +88,14 @@ export function WaitListTableWrapper() {
       setPage(1)
     },
     [setSidebarParams, setPage]
+  )
+
+  const handleApplyFiltersAndClose = useCallback(
+    (filters: FilterValues) => {
+      handleApplyFilters(filters)
+      setFiltersOpen(false)
+    },
+    [handleApplyFilters]
   )
 
   useEffect(() => {
@@ -136,13 +148,56 @@ export function WaitListTableWrapper() {
   )
 
   return (
-    <Stack direction="row" spacing={3} flex={1}>
-      <FilterBar initialValues={sidebarFilters} onApply={handleApplyFilters} />
+    <>
+      <Stack direction="row" spacing={3} flex={1}>
+        {isLgUp && (
+          <FilterBar
+            initialValues={sidebarFilters}
+            onApply={handleApplyFilters}
+          />
+        )}
+        <PageLayout>
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+            width="100%"
+          >
+            <Typography variant="m3-display-small">Waitlist</Typography>
+            {!isLgUp && (
+              <Button
+                variant="outlined"
+                size="small"
+                onClick={() => setFiltersOpen(true)}
+              >
+                Filters
+              </Button>
+            )}
+          </Stack>
+          <WaitListTable data={data} pageCount={pageCount} loading={loading} />
+        </PageLayout>
+      </Stack>
 
-      <PageLayout>
-        <Typography variant="m3-display-small">Waitlist</Typography>
-        <WaitListTable data={data} pageCount={pageCount} loading={loading} />
-      </PageLayout>
-    </Stack>
+      {!isLgUp && (
+        <Drawer
+          anchor="left"
+          open={filtersOpen}
+          onClose={() => setFiltersOpen(false)}
+          slotProps={{
+            paper: {
+              sx: {
+                width: '80vw',
+                maxWidth: 360,
+              },
+            },
+          }}
+        >
+          <FilterBar
+            initialValues={sidebarFilters}
+            onApply={handleApplyFiltersAndClose}
+          />
+        </Drawer>
+      )}
+    </>
   )
 }

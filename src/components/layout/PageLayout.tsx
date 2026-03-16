@@ -5,8 +5,8 @@ import React from 'react'
 const PageLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <Stack
-      sx={{ py: MAIN_SPACING_Y }}
-      spacing={3}
+      sx={{ py: { xs: 2, md: MAIN_SPACING_Y } }}
+      spacing={{ xs: 2, md: 3 }}
       width="100%"
       alignItems="start"
     >

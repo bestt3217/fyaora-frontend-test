@@ -21,7 +21,10 @@ const ColumnHeaderButton = styled(Button)(({ theme }) => ({
   justifyContent: 'flex-start',
   textTransform: 'none',
   color: theme.palette.neutral200,
-  fontSize: 17,
+  fontSize: 14,
+  [theme.breakpoints.up('md')]: {
+    fontSize: 17,
+  },
   lineHeight: '24px',
   fontWeight: 700,
   '& .MuiButton-endIcon': {

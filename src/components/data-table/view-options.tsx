@@ -36,10 +36,9 @@ export function DataTableViewOptions<TData>({
       table
         .getAllColumns()
         .filter(
-          (col) =>
-            typeof col.accessorFn !== 'undefined' && col.getCanHide(),
+          (col) => typeof col.accessorFn !== 'undefined' && col.getCanHide()
         ),
-    [table],
+    [table]
   )
 
   const filteredColumns = useMemo(() => {
@@ -70,7 +69,6 @@ export function DataTableViewOptions<TData>({
         disabled={disabled}
         sx={{
           ml: align === 'end' ? 'auto' : 0,
-          display: { xs: 'none', lg: 'flex' },
         }}
       >
         View
@@ -91,7 +89,11 @@ export function DataTableViewOptions<TData>({
           sx={{ px: 1.5, py: 1 }}
           slotProps={{ input: { sx: { fontSize: 14 } } }}
         />
-        <MenuList dense disablePadding sx={{ maxHeight: 260, overflow: 'auto' }}>
+        <MenuList
+          dense
+          disablePadding
+          sx={{ maxHeight: 260, overflow: 'auto' }}
+        >
           {filteredColumns.length === 0 ? (
             <MenuItem disabled>
               <Typography variant="body2" color="text.secondary">

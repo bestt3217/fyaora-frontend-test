@@ -59,7 +59,9 @@ const ToolbarFilterToggleButton = styled(ToggleButton)(({ theme }) => ({
 }))
 
 const ToolbarSearchField = styled(TextField)(({ theme }) => ({
-  minWidth: 240,
+  [theme.breakpoints.up('md')]: {
+    minWidth: 240,
+  },
   '& .MuiOutlinedInput-root': {
     height: 32,
     padding: '4px 12px',
