@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import {
   Box,
   TextField,
@@ -66,9 +66,27 @@ type FilterBarProps = {
   onApply?: (filters: FilterValues) => void
 }
 
+function filterValuesEqual(a: FilterValues, b: FilterValues): boolean {
+  return (
+    a.postcode === b.postcode &&
+    a.dateStart === b.dateStart &&
+    a.dateEnd === b.dateEnd &&
+    a.registrationStatus.length === b.registrationStatus.length &&
+    a.registrationStatus.every((v, i) => v === b.registrationStatus[i]) &&
+    a.vendorType.length === b.vendorType.length &&
+    a.vendorType.every((v, i) => v === b.vendorType[i]) &&
+    a.serviceOffering.length === b.serviceOffering.length &&
+    a.serviceOffering.every((v, i) => v === b.serviceOffering[i])
+  )
+}
+
 export default function FilterBar({ initialValues, onApply }: FilterBarProps) {
-  const [values, setValues] = useState<FilterValues>(
-    initialValues ?? initialFilters
+  const baseline = initialValues ?? initialFilters
+  const [values, setValues] = useState<FilterValues>(baseline)
+
+  const hasChanges = useMemo(
+    () => !filterValuesEqual(values, baseline),
+    [values, baseline]
   )
 
   const handleTextChange =
@@ -230,6 +248,7 @@ export default function FilterBar({ initialValues, onApply }: FilterBarProps) {
             onClick={handleApply}
             size="medium"
             fullWidth
+            disabled={!hasChanges}
           >
             Apply Filters
           </Button>
