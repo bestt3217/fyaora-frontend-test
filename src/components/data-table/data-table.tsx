@@ -70,6 +70,7 @@ export function DataTable<TData>({
                 bgcolor: (theme) => theme.palette.background.paper,
                 opacity: 0.9,
                 zIndex: 1,
+                top: 56,
               }}
             >
               <CircularProgress />
@@ -119,6 +120,7 @@ export function DataTable<TData>({
                   <TableRow
                     key={row.id}
                     selected={row.getIsSelected()}
+                    hover
                     sx={(theme) => ({
                       ...(index % 2 === 1 && {
                         bgcolor: theme.palette.neutral900,
