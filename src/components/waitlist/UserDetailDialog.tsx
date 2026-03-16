@@ -274,17 +274,19 @@ export function UserDetailDialog({
 
           {/* Actions */}
           <Stack
-            direction={isSmDown ? 'column' : 'row'}
-            justifyContent="center"
-            spacing={2}
+            direction="row"
+            justifyContent={isSmDown ? 'space-between' : 'center'}
+            spacing={isSmDown ? 1.5 : 2}
+            sx={{ width: '100%' }}
           >
             <Button
-              fullWidth={isSmDown}
               sx={{
                 borderRadius: 100,
-                height: 56,
-                width: isSmDown ? '100%' : 150,
-                fontSize: 20,
+                height: isSmDown ? 44 : 56,
+                minWidth: isSmDown ? 'auto' : 150,
+                px: isSmDown ? 2 : 3,
+                fontSize: isSmDown ? 16 : 20,
+                flex: isSmDown ? 1 : 'unset',
               }}
               variant="contained"
               color="primary"
@@ -296,12 +298,13 @@ export function UserDetailDialog({
               Onboard
             </Button>
             <Button
-              fullWidth={isSmDown}
               sx={{
                 borderRadius: 100,
-                height: 56,
-                width: isSmDown ? '100%' : 150,
-                fontSize: 20,
+                height: isSmDown ? 44 : 56,
+                minWidth: isSmDown ? 'auto' : 150,
+                px: isSmDown ? 2 : 3,
+                fontSize: isSmDown ? 16 : 20,
+                flex: isSmDown ? 1 : 'unset',
               }}
               variant="contained"
               color="error"
