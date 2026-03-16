@@ -1,3 +1,4 @@
+import React from 'react'
 import { Link as RouterLink, useLocation } from 'react-router-dom'
 import {
   AppBar,
@@ -9,10 +10,13 @@ import {
 } from '@mui/material'
 import type { ButtonProps } from '@mui/material/Button'
 import { styled, useTheme } from '@mui/material/styles'
+import MenuIcon from '@mui/icons-material/Menu'
 import IconNotification from '../icons/IconNotification'
 import IconChat from '../icons/IconChat'
 import UserMenu from './UserMenu'
+import { MobileNavDrawer } from './MobileNavDrawer'
 import { HEADER_HEIGHT_MD, HEADER_HEIGHT_XS } from '@/lib/const'
+import Logo from '../Logo'
 
 const navItems = [
   { label: 'Service Dashboard', path: '/service-dashboard' },
@@ -53,6 +57,11 @@ const HeaderIconButton = styled(IconButton)(({ theme }) => ({
 export default function Header() {
   const location = useLocation()
   const theme = useTheme()
+  const [mobileOpen, setMobileOpen] = React.useState(false)
+
+  const handleToggleMobile = () => {
+    setMobileOpen((open) => !open)
+  }
 
   return (
     <AppBar
@@ -66,9 +75,41 @@ export default function Header() {
           disableGutters
           sx={{
             minHeight: { xs: HEADER_HEIGHT_XS, md: HEADER_HEIGHT_MD },
+            justifyContent: 'space-between',
+            alignItems: 'center',
           }}
         >
-          <Stack direction="row" spacing={1} flex={1} flexWrap="wrap">
+          {/* Mobile menu button and logo */}
+          <Stack
+            direction="row"
+            spacing={1}
+            alignItems="center"
+            sx={{
+              display: {
+                xs: 'flex',
+                lg: 'none',
+              },
+            }}
+          >
+            <IconButton
+              edge="start"
+              color="inherit"
+              sx={{ p: 0 }}
+              onClick={handleToggleMobile}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Logo />
+          </Stack>
+
+          {/* Desktop nav */}
+          <Stack
+            direction="row"
+            spacing={1}
+            flex={1}
+            flexWrap="wrap"
+            sx={{ display: { xs: 'none', lg: 'flex' } }}
+          >
             {navItems.map(({ label, path }) => (
               <NavButton
                 key={path}
@@ -82,7 +123,8 @@ export default function Header() {
             ))}
           </Stack>
 
-          <Stack direction="row" spacing={5}>
+          {/* Right actions */}
+          <Stack direction="row" spacing={{ xs: 1, sm: 2, md: 5 }}>
             <HeaderIconButton disableRipple>
               <IconNotification width={24} height={24} />
             </HeaderIconButton>
@@ -93,6 +135,12 @@ export default function Header() {
           </Stack>
         </Toolbar>
       </Container>
+
+      <MobileNavDrawer
+        open={mobileOpen}
+        items={navItems}
+        onClose={handleToggleMobile}
+      />
     </AppBar>
   )
 }
