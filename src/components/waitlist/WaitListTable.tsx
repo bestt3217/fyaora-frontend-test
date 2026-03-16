@@ -1,10 +1,11 @@
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { parseAsString, useQueryState } from 'nuqs'
 import { DataTable, DataTableToolbar } from '@/components/data-table'
 import { useDataTable } from '@/hooks/use-data-table'
 import type { WaitlistRow } from '@/types/waitlist'
-import { getWaitlistTableColumns } from './waitlist-table-columns'
-import { WaitlistTableActionBar } from './waitlist-table-action-bar'
+import { getWaitlistTableColumns } from './WaitlistTableColumns'
+import { WaitlistTableActionBar } from './WaitlistTableActionBar'
+import { UserDetailDialog } from './UserDetailDialog'
 
 const FILTERS = {
   type: 'toggle' as const,
@@ -32,7 +33,22 @@ export function WaitListTable({
     parseAsString.withDefault(FILTERS.options[0].value)
   )
 
-  const columns = useMemo(() => getWaitlistTableColumns(), [])
+  const [selectedRow, setSelectedRow] = useState<WaitlistRow | null>(null)
+  const [detailOpen, setDetailOpen] = useState(false)
+
+  const handleOpenDetail = useCallback((row: WaitlistRow) => {
+    setSelectedRow(row)
+    setDetailOpen(true)
+  }, [])
+
+  const handleCloseDetail = useCallback(() => {
+    setDetailOpen(false)
+  }, [])
+
+  const columns = useMemo(
+    () => getWaitlistTableColumns({ onEditRow: handleOpenDetail }),
+    [handleOpenDetail]
+  )
 
   const { table, setPage } = useDataTable({
     data,
@@ -62,21 +78,29 @@ export function WaitListTable({
   const search = table.getState().globalFilter ?? ''
 
   return (
-    <DataTable
-      table={table}
-      loading={loading}
-      hidePageSizeSelector
-      actionBar={<WaitlistTableActionBar table={table} />}
-    >
-      <DataTableToolbar
+    <>
+      <DataTable
         table={table}
-        filters={FILTERS}
-        filterValue={filterValue}
-        onFilterChange={setFilterValue}
-        searchValue={search}
-        onSearchChange={(value) => table.setGlobalFilter(value)}
-        searchPlaceholder="Search User"
+        loading={loading}
+        hidePageSizeSelector
+        actionBar={<WaitlistTableActionBar table={table} />}
+      >
+        <DataTableToolbar
+          table={table}
+          filters={FILTERS}
+          filterValue={filterValue}
+          onFilterChange={setFilterValue}
+          searchValue={search}
+          onSearchChange={(value) => table.setGlobalFilter(value)}
+          searchPlaceholder="Search User"
+        />
+      </DataTable>
+
+      <UserDetailDialog
+        open={detailOpen}
+        row={selectedRow}
+        onClose={handleCloseDetail}
       />
-    </DataTable>
+    </>
   )
 }

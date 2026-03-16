@@ -16,7 +16,13 @@ const EditRowButton = styled(IconButton)(({ theme }) => ({
   },
 }))
 
-export function getWaitlistTableColumns(): ColumnDef<WaitlistRow, unknown>[] {
+export interface WaitlistColumnsOptions {
+  onEditRow?: (row: WaitlistRow) => void
+}
+
+export function getWaitlistTableColumns(
+  options: WaitlistColumnsOptions = {}
+): ColumnDef<WaitlistRow, unknown>[] {
   return [
     columnHelper.display({
       id: 'select',
@@ -97,9 +103,7 @@ export function getWaitlistTableColumns(): ColumnDef<WaitlistRow, unknown>[] {
         <Box sx={{ textAlign: 'right' }}>
           <EditRowButton
             size="small"
-            onClick={() => {
-              // TODO: open edit dialog/sheet for row.original
-            }}
+            onClick={() => options.onEditRow?.(row.original)}
             disableRipple
             aria-label={`Edit ${row.original.email}`}
           >
