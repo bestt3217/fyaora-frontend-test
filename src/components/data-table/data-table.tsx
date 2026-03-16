@@ -78,7 +78,12 @@ export function DataTable<TData>({
           <Table size="small" stickyHeader>
             <TableHead>
               {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
+                <TableRow
+                  key={headerGroup.id}
+                  sx={(theme) => ({
+                    bgcolor: theme.palette.neutral950,
+                  })}
+                >
                   {headerGroup.headers.map((header) => (
                     <TableCell
                       key={header.id}
@@ -91,14 +96,10 @@ export function DataTable<TData>({
                         lineHeight: '24px',
                         fontWeight: 700,
                         whiteSpace: 'nowrap',
-                        bgcolor: theme.palette.neutral950,
                         borderBottom: '1px solid',
+                        bgcolor: 'transparent',
                         borderBottomColor: theme.palette.neutral700,
                         ...getColumnPinningStyle({ column: header.column }),
-                        ...(header.column.getIsPinned() && {
-                          zIndex: 3,
-                          backgroundColor: theme.palette.neutral950,
-                        }),
                       })}
                     >
                       {header.isPlaceholder
@@ -123,9 +124,7 @@ export function DataTable<TData>({
                         bgcolor: theme.palette.neutral900,
                       }),
                       '&.Mui-selected': {
-                        ...(index % 2 === 1 && {
-                          bgcolor: theme.palette.neutral900,
-                        }),
+                        bgcolor: theme.palette.neutral950,
                       },
                     })}
                   >
@@ -140,12 +139,8 @@ export function DataTable<TData>({
                           lineHeight: '20px',
                           letterSpacing: 0.25,
                           borderBottom: 'none',
-                          ...getColumnPinningStyle({ column: cell.column }),
-                          ...(cell.column.getIsPinned() && {
-                            backgroundColor:
-                              index % 2 === 1
-                                ? theme.palette.neutral900
-                                : theme.palette.background.paper,
+                          ...getColumnPinningStyle({
+                            column: cell.column,
                           }),
                         })}
                       >
