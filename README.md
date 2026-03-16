@@ -1,73 +1,68 @@
-# React + TypeScript + Vite
+# Fyaora Waitlist Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This project implements the **Fyaora waitlist / human resources page** with a rich data-table experience, using **React + TypeScript + Vite + MUI + TanStack Table**.
 
-Currently, two official plugins are available:
+### Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Waitlist table**
+  - Server‑style client-side pagination, sorting, and filtering (powered by TanStack Table and a `getWaitList` helper over `public/data/waitlist.json`).
+  - Columns for email, phone, postcode, vendor type, service offering, signup date, and status.
+  - Bulk selection and action bar.
 
-## React Compiler
+- **Filtering & search**
+  - Left **FilterBar** with:
+    - Postcode text filter.
+    - Registration status, vendor type, and service offering checkboxes.
+    - Date range filter (start/end) over `dateRegistered` (inclusive, using `getTime()`).
+  - Global search over common fields, synced with the URL.
+  - Filters, sort, pagination, search, and type (service‑providers/customers) are all reflected in URL query params via **nuqs**.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Waitlist details**
+  - Row “Edit” action opens a **UserDetailDialog** with:
+    - User details header chips (type + status).
+    - Contact information, customer/provider details, and service offering.
+    - Internal notes section with inline **Edit → Save/Cancel** and a read‑only default state.
+    - **Onboard** and **Reject** actions that close the dialog and show a success toast.
 
-## Expanding the ESLint configuration
+- **Global toast system**
+  - `ToastProvider` + `useToast` context, rendering a single `SuccessSnackbar` at app root.
+  - Any component can call `useToast().showToast('Message')` to show a styled success toast.
+  - Used by:
+    - FilterBar (via `WaitListTableWrapper`) → “Filters applied successfully.”
+    - UserDetailDialog → “User onboarded successfully.” / “User rejected.”
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **Layout & responsiveness**
+  - `MainLayout` with header navigation and page layout.
+  - **Header**: desktop nav buttons plus mobile hamburger that opens a `MobileNavDrawer`.
+  - **FilterBar**:
+    - Desktop: sticky sidebar.
+    - Mobile: opens inside a left `Drawer` via a “Filters” button.
+  - Pagination UI matches the provided design (Prev / Next + page numbers with custom theme tokens and hover states).
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Tech stack
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- **React 19 + TypeScript + Vite**
+- **MUI v7** for layout, theming, dialogs, drawers, buttons, etc.
+- **TanStack Table** for table state and rendering.
+- **nuqs** (with React Router v7 adapter) for URL‑driven table/query state.
+- **dayjs** for date formatting and parsing.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Running the app
+
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Then open `http://localhost:5173/waitlist`.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Key files
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- Waitlist page wrapper: `src/components/waitlist/WaitListTableWrapper.tsx`
+- Table: `src/components/waitlist/WaitListTable.tsx`
+- Columns: `src/components/waitlist/WaitlistTableColumns.tsx`
+- Waitlist filtering logic: `src/lib/get-waitlist.ts`
+- Filter sidebar: `src/components/waitlist/FilterBar.tsx`
+- User detail modal: `src/components/waitlist/UserDetailDialog.tsx`
+- Global toast context: `src/contexts/ToastContext.tsx`, `src/contexts/useToast.ts`, `src/contexts/toastContext.ts`
+- Toast UI: `src/components/ui/SuccessSnackbar.tsx`
