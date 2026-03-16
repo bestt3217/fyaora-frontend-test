@@ -97,6 +97,7 @@ export function WaitListTable({
       </DataTable>
 
       <UserDetailDialog
+        key={selectedRow?.id ?? 'closed'}
         open={detailOpen}
         row={selectedRow}
         onClose={handleCloseDetail}
