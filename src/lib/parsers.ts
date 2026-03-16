@@ -3,6 +3,20 @@ import { z } from 'zod'
 
 import type { ExtendedColumnSort } from '@/types/data-table'
 
+const COMMA = ','
+
+/** Parser for comma-separated string array (e.g. ?key=a,b,c). */
+export const parseAsCommaSeparatedArray = createParser({
+  parse: (value) =>
+    value?.trim()
+      ? value.split(COMMA).map((s) => s.trim()).filter(Boolean)
+      : [],
+  serialize: (arr) =>
+    Array.isArray(arr) && arr.length > 0 ? arr.join(COMMA) : '',
+  eq: (a, b) =>
+    a.length === b.length && a.every((v, i) => v === b[i]),
+})
+
 const sortingItemSchema = z.object({
   id: z.string(),
   desc: z.boolean(),

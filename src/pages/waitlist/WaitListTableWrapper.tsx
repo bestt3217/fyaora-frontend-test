@@ -1,20 +1,48 @@
-import { useEffect, useMemo, useState } from 'react'
-import { parseAsInteger, parseAsString, useQueryState } from 'nuqs'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import {
+  parseAsInteger,
+  parseAsString,
+  useQueryState,
+  useQueryStates,
+} from 'nuqs'
 import { Stack, Typography } from '@mui/material'
 import FilterBar from '@/components/waitlist/FilterBar'
-import { getSortingStateParser } from '@/lib/parsers'
+import type { FilterValues } from '@/components/waitlist/FilterBar'
+import {
+  getSortingStateParser,
+  parseAsCommaSeparatedArray,
+} from '@/lib/parsers'
 import { getWaitList, WAITLIST_SORT_COLUMN_IDS } from '@/lib/get-waitlist'
 import type { WaitlistRow } from '@/types/waitlist'
 import { WaitListTable } from './WaitListTable'
+import PageLayout from '@/components/layout/PageLayout'
 
 const WAITLIST_DATA_URL = '/data/waitlist.json'
+
+function buildSidebarFiltersFromParams(params: {
+  postcode?: string | null
+  dateStart?: string | null
+  dateEnd?: string | null
+  registrationStatus?: string[] | null
+  vendorType?: string[] | null
+  serviceOffering?: string[] | null
+}): FilterValues {
+  return {
+    postcode: params.postcode ?? '',
+    dateStart: params.dateStart ?? '',
+    dateEnd: params.dateEnd ?? '',
+    registrationStatus: params.registrationStatus ?? [],
+    vendorType: params.vendorType ?? [],
+    serviceOffering: params.serviceOffering ?? [],
+  }
+}
 
 export function WaitListTableWrapper() {
   const [fullData, setFullData] = useState<WaitlistRow[]>([])
   const [loading, setLoading] = useState(true)
   const [, setError] = useState<string | null>(null)
 
-  const [page] = useQueryState('page', parseAsInteger.withDefault(1))
+  const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
   const [perPage] = useQueryState('perPage', parseAsInteger.withDefault(10))
   const [search] = useQueryState('search', parseAsString.withDefault(''))
   const [type] = useQueryState(
@@ -24,6 +52,38 @@ export function WaitListTableWrapper() {
   const [sorting] = useQueryState(
     'sort',
     getSortingStateParser(WAITLIST_SORT_COLUMN_IDS).withDefault([])
+  )
+
+  const [sidebarParams, setSidebarParams] = useQueryStates(
+    {
+      postcode: parseAsString.withDefault(''),
+      dateStart: parseAsString.withDefault(''),
+      dateEnd: parseAsString.withDefault(''),
+      registrationStatus: parseAsCommaSeparatedArray.withDefault([]),
+      vendorType: parseAsCommaSeparatedArray.withDefault([]),
+      serviceOffering: parseAsCommaSeparatedArray.withDefault([]),
+    },
+    { shallow: false }
+  )
+
+  const sidebarFilters = useMemo(
+    () => buildSidebarFiltersFromParams(sidebarParams),
+    [sidebarParams]
+  )
+
+  const handleApplyFilters = useCallback(
+    (filters: FilterValues) => {
+      setSidebarParams({
+        postcode: filters.postcode,
+        dateStart: filters.dateStart,
+        dateEnd: filters.dateEnd,
+        registrationStatus: filters.registrationStatus,
+        vendorType: filters.vendorType,
+        serviceOffering: filters.serviceOffering,
+      })
+      setPage(1)
+    },
+    [setSidebarParams, setPage]
   )
 
   useEffect(() => {
@@ -56,20 +116,33 @@ export function WaitListTableWrapper() {
         page: page ?? 1,
         perPage: perPage ?? 10,
         type: type ?? 'service-providers',
+        postcode: sidebarFilters.postcode || undefined,
+        registrationStatus:
+          sidebarFilters.registrationStatus.length > 0
+            ? sidebarFilters.registrationStatus
+            : undefined,
+        dateStart: sidebarFilters.dateStart || undefined,
+        dateEnd: sidebarFilters.dateEnd || undefined,
+        vendorType:
+          sidebarFilters.vendorType.length > 0
+            ? sidebarFilters.vendorType
+            : undefined,
+        serviceOffering:
+          sidebarFilters.serviceOffering.length > 0
+            ? sidebarFilters.serviceOffering
+            : undefined,
       }),
-    [fullData, search, sorting, page, perPage, type]
+    [fullData, search, sorting, page, perPage, type, sidebarFilters]
   )
 
   return (
     <Stack direction="row" spacing={3} flex={1}>
-      <FilterBar onApply={(filters) => console.log('Apply filters', filters)} />
+      <FilterBar initialValues={sidebarFilters} onApply={handleApplyFilters} />
 
-      <Stack spacing={3} width="100%" alignItems="start">
+      <PageLayout>
         <Typography variant="m3-display-small">Waitlist</Typography>
-        <Stack gap={3} width="100%">
-          <WaitListTable data={data} pageCount={pageCount} loading={loading} />
-        </Stack>
-      </Stack>
+        <WaitListTable data={data} pageCount={pageCount} loading={loading} />
+      </PageLayout>
     </Stack>
   )
 }

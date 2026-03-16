@@ -62,23 +62,21 @@ export function WaitListTable({
   const search = table.getState().globalFilter ?? ''
 
   return (
-    <>
-      <DataTable
+    <DataTable
+      table={table}
+      loading={loading}
+      hidePageSizeSelector
+      actionBar={<WaitlistTableActionBar table={table} />}
+    >
+      <DataTableToolbar
         table={table}
-        loading={loading}
-        hidePageSizeSelector
-        actionBar={<WaitlistTableActionBar table={table} />}
-      >
-        <DataTableToolbar
-          table={table}
-          filters={FILTERS}
-          filterValue={filterValue}
-          onFilterChange={setFilterValue}
-          searchValue={search}
-          onSearchChange={(value) => table.setGlobalFilter(value)}
-          searchPlaceholder="Search User"
-        />
-      </DataTable>
-    </>
+        filters={FILTERS}
+        filterValue={filterValue}
+        onFilterChange={setFilterValue}
+        searchValue={search}
+        onSearchChange={(value) => table.setGlobalFilter(value)}
+        searchPlaceholder="Search User"
+      />
+    </DataTable>
   )
 }

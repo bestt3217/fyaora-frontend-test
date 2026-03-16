@@ -1,5 +1,15 @@
 import type { WaitlistRow } from '@/types/waitlist'
 
+/** Sidebar filter values (from FilterBar). */
+export interface WaitListSidebarFilters {
+  postcode?: string
+  registrationStatus?: string[]
+  dateStart?: string
+  dateEnd?: string
+  vendorType?: string[]
+  serviceOffering?: string[]
+}
+
 /** Column ids that can be used for sorting in the waitlist table (for URL parsing). */
 export const WAITLIST_SORT_COLUMN_IDS = new Set([
   'email',
@@ -11,7 +21,7 @@ export const WAITLIST_SORT_COLUMN_IDS = new Set([
   'registrationStatus',
 ])
 
-export interface GetWaitListParams {
+export interface GetWaitListParams extends WaitListSidebarFilters {
   search?: string
   sort: { id: string; desc: boolean }[]
   page: number
@@ -39,7 +49,9 @@ function matchesSearch(row: WaitlistRow, search: string): boolean {
   if (!s) return true
   return SEARCH_FIELDS.some((key) => {
     const val = row[key]
-    return String(val ?? '').toLowerCase().includes(s)
+    return String(val ?? '')
+      .toLowerCase()
+      .includes(s)
   })
 }
 
@@ -55,6 +67,52 @@ function compareValues(a: unknown, b: unknown): number {
   return aStr.localeCompare(bStr, undefined, { numeric: true })
 }
 
+function applySidebarFilters(
+  rows: WaitlistRow[],
+  filters: WaitListSidebarFilters
+): WaitlistRow[] {
+  let result = rows
+  if (filters.postcode?.trim()) {
+    const pc = filters.postcode.trim().toLowerCase()
+    result = result.filter((row) =>
+      String(row.postcode ?? '')
+        .toLowerCase()
+        .includes(pc)
+    )
+  }
+  if (filters.registrationStatus?.length) {
+    const set = new Set(filters.registrationStatus)
+    result = result.filter((row) => set.has(row.registrationStatus))
+  }
+  // Date range (expects YYYY-MM-DD from FilterBar): compare with getTime()
+  if (filters.dateStart?.trim() || filters.dateEnd?.trim()) {
+    const startStr = filters.dateStart?.trim()
+    const endStr = filters.dateEnd?.trim()
+    const startTime = startStr
+      ? new Date(startStr + 'T00:00:00.000Z').getTime()
+      : -Infinity
+    const endTime = endStr
+      ? new Date(endStr + 'T23:59:59.999Z').getTime()
+      : Infinity
+    result = result.filter((row) => {
+      const raw = row.dateRegistered
+      if (raw == null || raw === '') return false
+      const rowTime = new Date(raw).getTime()
+      if (Number.isNaN(rowTime)) return false
+      return rowTime >= startTime && rowTime <= endTime
+    })
+  }
+  if (filters.vendorType?.length) {
+    const set = new Set(filters.vendorType)
+    result = result.filter((row) => set.has(row.vendorType))
+  }
+  if (filters.serviceOffering?.length) {
+    const set = new Set(filters.serviceOffering)
+    result = result.filter((row) => set.has(row.serviceOffering))
+  }
+  return result
+}
+
 /**
  * Server-style filtering: filter, sort, and paginate waitlist data in JS.
  * Returns one page of data and total page count (same shape as a server API).
@@ -67,6 +125,7 @@ export function getWaitList(
   if (params.search?.trim()) {
     rows = rows.filter((row) => matchesSearch(row, params.search!))
   }
+  rows = applySidebarFilters(rows, params)
   const sort = params.sort?.length ? [...params.sort].reverse() : []
   for (const { id, desc } of sort) {
     const key = id as keyof WaitlistRow
