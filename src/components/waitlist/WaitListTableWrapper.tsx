@@ -15,8 +15,11 @@ import {
 } from '@/lib/parsers'
 import { getWaitList, WAITLIST_SORT_COLUMN_IDS } from '@/lib/get-waitlist'
 import type { WaitlistRow } from '@/types/waitlist'
+import { useToast } from '@/hooks/use-toast'
 import { WaitListTable } from './WaitListTable'
 import PageLayout from '@/components/layout/PageLayout'
+
+const TOAST_FILTERS_APPLIED = 'Filters applied successfully.'
 
 const WAITLIST_DATA_URL = '/data/waitlist.json'
 
@@ -45,6 +48,7 @@ export function WaitListTableWrapper() {
   const theme = useTheme()
   const isLgUp = useMediaQuery(theme.breakpoints.up('lg'))
   const [filtersOpen, setFiltersOpen] = useState(false)
+  const { showToast } = useToast()
 
   const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
   const [perPage] = useQueryState('perPage', parseAsInteger.withDefault(10))
@@ -86,8 +90,9 @@ export function WaitListTableWrapper() {
         serviceOffering: filters.serviceOffering,
       })
       setPage(1)
+      showToast(TOAST_FILTERS_APPLIED)
     },
-    [setSidebarParams, setPage]
+    [setSidebarParams, setPage, showToast]
   )
 
   const handleApplyFiltersAndClose = useCallback(

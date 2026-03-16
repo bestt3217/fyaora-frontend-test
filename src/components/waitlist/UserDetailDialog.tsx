@@ -14,6 +14,7 @@ import {
 } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import type { WaitlistRow } from '@/types/waitlist'
+import { useToast } from '@/hooks/use-toast'
 import IconUserOutline from '../icons/IconUserOutline'
 import IconMail from '../icons/IconMail'
 import IconPhone from '../icons/IconPhone'
@@ -42,6 +43,7 @@ export function UserDetailDialog({
   row,
   onClose,
 }: UserDetailDialogProps) {
+  const { showToast } = useToast()
   const [notesEditing, setNotesEditing] = useState(false)
   const [internalNotes, setInternalNotes] = useState(PLACEHOLDER_NOTES)
   const [draftNotes, setDraftNotes] = useState(PLACEHOLDER_NOTES)
@@ -271,7 +273,10 @@ export function UserDetailDialog({
               sx={{ borderRadius: 100, height: 56, width: 150, fontSize: 20 }}
               variant="contained"
               color="primary"
-              onClick={onClose}
+              onClick={() => {
+                showToast('User onboarded successfully.')
+                onClose()
+              }}
             >
               Onboard
             </Button>
@@ -279,7 +284,10 @@ export function UserDetailDialog({
               sx={{ borderRadius: 100, height: 56, width: 150, fontSize: 20 }}
               variant="contained"
               color="error"
-              onClick={onClose}
+              onClick={() => {
+                showToast('User rejected.')
+                onClose()
+              }}
             >
               Reject
             </Button>
