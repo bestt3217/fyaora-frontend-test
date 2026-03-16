@@ -12,6 +12,8 @@ import {
   TextField,
   Typography,
 } from '@mui/material'
+import { useTheme } from '@mui/material/styles'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import CloseIcon from '@mui/icons-material/Close'
 import type { WaitlistRow } from '@/types/waitlist'
 import { useToast } from '@/hooks/use-toast'
@@ -43,6 +45,8 @@ export function UserDetailDialog({
   row,
   onClose,
 }: UserDetailDialogProps) {
+  const theme = useTheme()
+  const isSmDown = useMediaQuery(theme.breakpoints.down('sm'))
   const { showToast } = useToast()
   const [notesEditing, setNotesEditing] = useState(false)
   const [internalNotes, setInternalNotes] = useState(PLACEHOLDER_NOTES)
@@ -74,6 +78,7 @@ export function UserDetailDialog({
       onClose={onClose}
       maxWidth="sm"
       fullWidth
+      fullScreen={isSmDown}
       slotProps={{
         paper: {
           sx: {
@@ -102,10 +107,10 @@ export function UserDetailDialog({
           </Stack>
 
           <Stack
-            direction="row"
+            direction={isSmDown ? 'column' : 'row'}
             justifyContent="space-between"
-            alignItems="center"
-            gap={0.5}
+            alignItems={isSmDown ? 'flex-start' : 'center'}
+            gap={isSmDown ? 1.5 : 0.5}
           >
             <Stack spacing={1}>
               <Typography
@@ -154,29 +159,29 @@ export function UserDetailDialog({
 
           <Stack gap={2.5}>
             <SectionTitle>Contact Information</SectionTitle>
-            <Grid container rowSpacing={4} columnSpacing={2.5}>
-              <Grid size={6}>
+            <Grid container rowSpacing={3} columnSpacing={2.5}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <InfoRow
                   icon={<IconMail width={16} height={16} color="#000000" />}
                 >
                   Contact Information
                 </InfoRow>
               </Grid>
-              <Grid size={6}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <InfoRow
                   icon={<IconPhone width={16} height={16} color="#000000" />}
                 >
                   {row.phoneNumber || '—'}
                 </InfoRow>
               </Grid>
-              <Grid size={6}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <InfoRow
                   icon={<IconLocation width={16} height={16} color="#000000" />}
                 >
                   United Kingdom
                 </InfoRow>
               </Grid>
-              <Grid size={6}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <InfoRow
                   icon={
                     <IconCalendarOutline
@@ -268,9 +273,19 @@ export function UserDetailDialog({
           </Box>
 
           {/* Actions */}
-          <Stack direction="row" justifyContent="center" spacing={2}>
+          <Stack
+            direction={isSmDown ? 'column' : 'row'}
+            justifyContent="center"
+            spacing={2}
+          >
             <Button
-              sx={{ borderRadius: 100, height: 56, width: 150, fontSize: 20 }}
+              fullWidth={isSmDown}
+              sx={{
+                borderRadius: 100,
+                height: 56,
+                width: isSmDown ? '100%' : 150,
+                fontSize: 20,
+              }}
               variant="contained"
               color="primary"
               onClick={() => {
@@ -281,7 +296,13 @@ export function UserDetailDialog({
               Onboard
             </Button>
             <Button
-              sx={{ borderRadius: 100, height: 56, width: 150, fontSize: 20 }}
+              fullWidth={isSmDown}
+              sx={{
+                borderRadius: 100,
+                height: 56,
+                width: isSmDown ? '100%' : 150,
+                fontSize: 20,
+              }}
               variant="contained"
               color="error"
               onClick={() => {
