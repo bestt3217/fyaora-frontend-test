@@ -163,6 +163,7 @@ export default function FilterBar({ initialValues, onApply }: FilterBarProps) {
               <DatePicker
                 label="Start"
                 value={values.dateStart ? dayjs(values.dateStart) : null}
+                maxDate={values.dateEnd ? dayjs(values.dateEnd) : undefined}
                 onChange={(value) =>
                   setValues((prev) => ({
                     ...prev,
@@ -178,6 +179,7 @@ export default function FilterBar({ initialValues, onApply }: FilterBarProps) {
               <DatePicker
                 label="End"
                 value={values.dateEnd ? dayjs(values.dateEnd) : null}
+                minDate={values.dateStart ? dayjs(values.dateStart) : undefined}
                 onChange={(value) =>
                   setValues((prev) => ({
                     ...prev,
