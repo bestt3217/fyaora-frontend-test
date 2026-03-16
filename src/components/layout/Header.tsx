@@ -12,6 +12,7 @@ import { styled, useTheme } from '@mui/material/styles'
 import IconNotification from '../icons/IconNotification'
 import IconChat from '../icons/IconChat'
 import UserMenu from './UserMenu'
+import { HEADER_HEIGHT_MD, HEADER_HEIGHT_XS } from '@/lib/const'
 
 const navItems = [
   { label: 'Service Dashboard', path: '/service-dashboard' },
@@ -64,7 +65,7 @@ export default function Header() {
         <Toolbar
           disableGutters
           sx={{
-            minHeight: { xs: 48, sm: 56 },
+            minHeight: { xs: HEADER_HEIGHT_XS, md: HEADER_HEIGHT_MD },
           }}
         >
           <Stack direction="row" spacing={1} flex={1} flexWrap="wrap">

@@ -13,6 +13,7 @@ import logo from '../../assets/logo.svg'
 import CheckboxField from './CheckboxField'
 import { DatePicker } from '@mui/x-date-pickers'
 import dayjs from 'dayjs'
+import { FILTER_BAR_WIDTH, HEADER_HEIGHT_MD, MAIN_SPACING_Y } from '@/lib/const'
 
 const REGISTRATION_STATUS = ['Onboarded', 'Rejected'] as const
 const VENDOR_TYPES = ['Independent', 'Company'] as const
@@ -60,11 +61,15 @@ const initialFilters: FilterValues = {
 }
 
 type FilterBarProps = {
+  /** Initial filter values (e.g. from URL query params). When changed, form resets to these. */
+  initialValues?: FilterValues
   onApply?: (filters: FilterValues) => void
 }
 
-export default function FilterBar({ onApply }: FilterBarProps) {
-  const [values, setValues] = useState<FilterValues>(initialFilters)
+export default function FilterBar({ initialValues, onApply }: FilterBarProps) {
+  const [values, setValues] = useState<FilterValues>(
+    initialValues ?? initialFilters
+  )
 
   const handleTextChange =
     (field: 'postcode' | 'dateStart' | 'dateEnd') =>
@@ -85,129 +90,147 @@ export default function FilterBar({ onApply }: FilterBarProps) {
   const handleApply = () => onApply?.(values)
   const handleClear = () => {
     setValues(initialFilters)
+    onApply?.(initialFilters)
   }
 
   return (
-    <Stack
-      component="aside"
+    <Box
       sx={{
-        width: 288,
-        flexShrink: 0,
-        bgcolor: 'neutral950',
-        p: 2,
+        py: MAIN_SPACING_Y * 1,
+        width: FILTER_BAR_WIDTH,
+        minWidth: FILTER_BAR_WIDTH,
+        overflow: 'hidden',
+        height: { xs: '100%', md: `calc(100vh - ${HEADER_HEIGHT_MD}px)` },
         position: 'sticky',
-        top: 0,
+        top: HEADER_HEIGHT_MD,
       }}
-      gap={5}
     >
-      <Box component={RouterLink} to="/">
-        <img src={logo} alt="Logo" style={{ height: 32, width: 'auto' }} />
-      </Box>
-      <Box sx={{ bgcolor: 'neutral800', px: 2, py: 1, borderRadius: 1 }}>
-        <Typography fontWeight={700} fontSize={16} lineHeight="20px">
-          User Management
-        </Typography>
-      </Box>
+      <Stack
+        component="aside"
+        sx={{
+          height: '100%',
+          flexShrink: 0,
+          bgcolor: 'neutral950',
+          p: 2,
+        }}
+        gap={4}
+      >
+        <Box component={RouterLink} to="/">
+          <img src={logo} alt="Logo" style={{ height: 32, width: 'auto' }} />
+        </Box>
+        <Box sx={{ bgcolor: 'neutral800', px: 2, py: 1, borderRadius: 1 }}>
+          <Typography fontWeight={700} fontSize={16} lineHeight="20px">
+            User Management
+          </Typography>
+        </Box>
 
-      <Box>
-        <FilterLabel component="label">Postcode</FilterLabel>
-        <TextField
-          placeholder="ZIP"
-          value={values.postcode}
-          onChange={handleTextChange('postcode')}
-          size="small"
-          fullWidth
-          variant="outlined"
-          sx={{ mt: 0.5, bgcolor: 'white', maxWidth: '125px' }}
-        />
-      </Box>
-
-      <Box>
-        <FilterLabel component="label">Registration Status</FilterLabel>
-        <FilterCheckboxGroup>
-          {REGISTRATION_STATUS.map((s) => (
-            <CheckboxField
-              key={s}
-              label={s}
-              checked={values.registrationStatus.includes(s)}
-              onChange={handleCheckboxChange('registrationStatus')(s)}
+        <Stack
+          gap={4}
+          sx={{
+            overflowY: 'auto',
+          }}
+        >
+          <Box>
+            <FilterLabel component="label">Postcode</FilterLabel>
+            <TextField
+              placeholder="ZIP"
+              value={values.postcode}
+              onChange={handleTextChange('postcode')}
+              size="small"
+              fullWidth
+              variant="outlined"
+              sx={{ mt: 0.5, bgcolor: 'white', maxWidth: '125px' }}
             />
-          ))}
-        </FilterCheckboxGroup>
-      </Box>
+          </Box>
 
-      <Box>
-        <FilterLabel component="label">Date registered</FilterLabel>
-        <Stack spacing={1} sx={{ mt: 0.5 }}>
-          <DatePicker
-            label="Start"
-            value={dayjs(values.dateStart)}
-            onChange={(value) =>
-              setValues((prev) => ({
-                ...prev,
-                dateStart: value?.toISOString() ?? '',
-              }))
-            }
-            slotProps={{
-              textField: {
-                helperText: 'MM/DD/YYYY',
-              },
-            }}
-          />
-          <DatePicker
-            label="End"
-            value={dayjs(values.dateEnd)}
-            onChange={(value) =>
-              setValues((prev) => ({
-                ...prev,
-                dateEnd: value?.toISOString() ?? '',
-              }))
-            }
-            slotProps={{
-              textField: {
-                helperText: 'MM/DD/YYYY',
-              },
-            }}
-          />
+          <Box>
+            <FilterLabel component="label">Registration Status</FilterLabel>
+            <FilterCheckboxGroup>
+              {REGISTRATION_STATUS.map((s) => (
+                <CheckboxField
+                  key={s}
+                  label={s}
+                  checked={values.registrationStatus.includes(s)}
+                  onChange={handleCheckboxChange('registrationStatus')(s)}
+                />
+              ))}
+            </FilterCheckboxGroup>
+          </Box>
+
+          <Box>
+            <FilterLabel component="label">Date registered</FilterLabel>
+            <Stack spacing={1} sx={{ mt: 0.5 }}>
+              <DatePicker
+                label="Start"
+                value={values.dateStart ? dayjs(values.dateStart) : null}
+                onChange={(value) =>
+                  setValues((prev) => ({
+                    ...prev,
+                    dateStart: value ? value.format('YYYY-MM-DD') : '',
+                  }))
+                }
+                slotProps={{
+                  textField: {
+                    helperText: 'MM/DD/YYYY',
+                  },
+                }}
+              />
+              <DatePicker
+                label="End"
+                value={values.dateEnd ? dayjs(values.dateEnd) : null}
+                onChange={(value) =>
+                  setValues((prev) => ({
+                    ...prev,
+                    dateEnd: value ? value.format('YYYY-MM-DD') : '',
+                  }))
+                }
+                slotProps={{
+                  textField: {
+                    helperText: 'MM/DD/YYYY',
+                  },
+                }}
+              />
+            </Stack>
+          </Box>
+
+          <Box>
+            <FilterLabel component="label">Vendor Type</FilterLabel>
+            <FilterCheckboxGroup>
+              {VENDOR_TYPES.map((t) => (
+                <CheckboxField
+                  key={t}
+                  label={t}
+                  checked={values.vendorType.includes(t)}
+                  onChange={handleCheckboxChange('vendorType')(t)}
+                />
+              ))}
+            </FilterCheckboxGroup>
+          </Box>
+
+          <Box>
+            <FilterLabel component="label">Service Offering</FilterLabel>
+            <FilterCheckboxGroup>
+              {SERVICE_OFFERINGS.map((s) => (
+                <CheckboxField
+                  key={s}
+                  label={s}
+                  checked={values.serviceOffering.includes(s)}
+                  onChange={handleCheckboxChange('serviceOffering')(s)}
+                />
+              ))}
+            </FilterCheckboxGroup>
+          </Box>
         </Stack>
-      </Box>
 
-      <Box>
-        <FilterLabel component="label">Vendor Type</FilterLabel>
-        <FilterCheckboxGroup>
-          {VENDOR_TYPES.map((t) => (
-            <CheckboxField
-              key={t}
-              label={t}
-              checked={values.vendorType.includes(t)}
-              onChange={handleCheckboxChange('vendorType')(t)}
-            />
-          ))}
-        </FilterCheckboxGroup>
-      </Box>
-
-      <Box>
-        <FilterLabel component="label">Service Offering</FilterLabel>
-        <FilterCheckboxGroup>
-          {SERVICE_OFFERINGS.map((s) => (
-            <CheckboxField
-              key={s}
-              label={s}
-              checked={values.serviceOffering.includes(s)}
-              onChange={handleCheckboxChange('serviceOffering')(s)}
-            />
-          ))}
-        </FilterCheckboxGroup>
-      </Box>
-
-      <Stack direction="row" spacing={1} alignItems="center">
-        <Button variant="contained" onClick={handleApply} size="medium">
-          Apply Filters
-        </Button>
-        <Button variant="outlined" onClick={handleClear} size="medium">
-          Clear Filters
-        </Button>
+        <Stack direction="row" spacing={1} alignItems="center">
+          <Button variant="contained" onClick={handleApply} size="medium">
+            Apply Filters
+          </Button>
+          <Button variant="outlined" onClick={handleClear} size="medium">
+            Clear Filters
+          </Button>
+        </Stack>
       </Stack>
-    </Stack>
+    </Box>
   )
 }

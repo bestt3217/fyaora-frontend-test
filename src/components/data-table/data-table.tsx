@@ -42,6 +42,7 @@ export function DataTable<TData>({
         display: 'flex',
         flexDirection: 'column',
         gap: 2.5,
+        width: '100%',
       }}
     >
       {children}
@@ -138,6 +139,7 @@ export function DataTable<TData>({
                           fontSize: 14,
                           lineHeight: '20px',
                           letterSpacing: 0.25,
+                          borderBottom: 'none',
                           ...getColumnPinningStyle({ column: cell.column }),
                           ...(cell.column.getIsPinned() && {
                             backgroundColor:
@@ -168,7 +170,7 @@ export function DataTable<TData>({
                       letterSpacing: 0.25,
                     })}
                   >
-                    No results.
+                    {!loading && `No results.`}
                   </TableCell>
                 </TableRow>
               )}
